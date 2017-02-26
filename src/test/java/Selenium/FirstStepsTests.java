@@ -2,10 +2,8 @@ package Selenium;
 
 import Selenium.PagePattern.HomePage;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Listeners;
-import org.testng.annotations.Test;
+import org.testng.ITestContext;
+import org.testng.annotations.*;
 
 /**
  * Created by User on 24.02.2017.
@@ -15,6 +13,11 @@ import org.testng.annotations.Test;
 public class FirstStepsTests {
 
     HomePage page = new HomePage();
+
+    @BeforeClass
+    public void onStart(ITestContext context){
+        context.setAttribute("WebDriver", HomePage.driver);
+    }
 
     @DataProvider
     public Object[][] positiveLoginParams(){
