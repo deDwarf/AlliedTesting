@@ -1,13 +1,15 @@
-package REST;
+package REST.Structures;
+
+import REST.REST;
 
 public class LogRequest {
 	
-	int    id;
-	long   timestamp;
-	String event;
-	String levelString;
-	String description;
-	String username;
+	private int    id;
+	private long   timestamp;
+	private String event;
+	private String levelString;
+	private String description;
+	private String username;
 	
 	
 	public int getId() {

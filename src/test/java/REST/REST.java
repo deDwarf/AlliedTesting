@@ -377,7 +377,7 @@ public class REST {
 		String url            = "http://" + host + "/elibraryws/book-requests/" + id;
 		HttpResponse response = removeRequest(url);
 		
-		System.out.println("Removing REST.BookRequest with id : " + id);
+		System.out.println("Removing REST.Structures.BookRequest with id : " + id);
 		System.out.println(getResponseData(response));
 	}
 	

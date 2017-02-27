@@ -1,7 +1,10 @@
 package Selenium;
 
+import Selenium.PagePattern.BooksPage;
 import Selenium.PagePattern.HomePage;
+import Selenium.PagePattern.WebPage;
 import org.testng.Assert;
+import org.testng.AssertTest;
 import org.testng.ITestContext;
 import org.testng.annotations.*;
 
@@ -12,11 +15,11 @@ import org.testng.annotations.*;
 @Test
 public class FirstStepsTests {
 
-    HomePage page = new HomePage();
+    private HomePage page = new HomePage();
 
     @BeforeClass
     public void onStart(ITestContext context){
-        context.setAttribute("WebDriver", HomePage.driver);
+        context.setAttribute("WebDriver", WebPage.driver);
     }
 
     @DataProvider
@@ -34,42 +37,47 @@ public class FirstStepsTests {
         };
     }
 
-    @Test(dataProvider = "positiveLoginParams")
+    @Test(dataProvider = "positiveLoginParams", description = "Logins to worker@ and user@ profiles. " +
+            "Success expected, correct params")
     public void positiveLogin(String name, String password){
 
         page.openPage();
         page.clickSignInBtn();
-        page.loginAs(name, password);
+        BooksPage booksPage = page.loginAs(name, password);
 
-        /*
-        * Проверить существование кнопки логаут
-        * Нажать логаут
-        * Проверить существование кнопки логин
-        */
+        Assert.assertTrue(page.isLoginFalse(), "Login failed");
+
+        booksPage.clickSignOutBtn();
+        Assert.assertEquals(WebPage.driver.getCurrentUrl(), WebPage.home, "Signout failed");
     }
-    @Test(dataProvider = "negativeLoginParams")
+    @Test(dataProvider = "negativeLoginParams",  description = "Logins to worker@ and user@ profiles. " +
+            "Fail expected, wrong params")
     public void negativeLogin(String name, String password){
 
         page.openPage();
         page.clickSignInBtn();
         page.loginAs(name, password);
 
-        if (page.isLoginFalse()) Assert.fail("Logged in with wrong params. Although it shouldn`t be!");
+        if (page.isLoginFalse()) Assert.fail("Logged in with wrong params. Although it shouldn`t!");
     }
 
-    @Test
+    @Test(description = "Registration of an account. " +
+            "Success expected, correct params")
     public void Registration() throws InterruptedException {
 
         page.openPage();
         page.clickRegisterBtn();
         page.registerAs("Username",
                 "UserLastname",
-                "elmoil2@mail.ru",
+                "elmoil5@mail.ru",
                 "password",
                 "password");
+
+        String answer = page.getRegistrationResult();
+        Assert.assertTrue(answer.contains("Thank you!"), "Registration failed with msg : " + answer);
     }
 
-    @Test
+    @Test(description = "Testing 'All books' link on homepage")
     public void gotoBooks(){
 
         page.openPage();

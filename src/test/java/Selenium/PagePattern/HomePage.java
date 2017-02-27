@@ -2,6 +2,7 @@ package Selenium.PagePattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,29 +17,25 @@ import org.testng.Assert;
 public class HomePage extends WebPage {
 	
 	
-	public HomePage()
-	{
-		super();
-	}
-	
+	public HomePage(){}
+
 	public void openPage()
 	{
-		WebPage.driver.get(home);
+		driver.get(home);
 	}
-	
-	
+
     public void clickSignInBtn()
     {
     	String sign_in_path = "/html/body/div/header/div[1]/div/button[1]";
     	/* Click sign in button */
-    	WebPage.driver.findElement(By.xpath(sign_in_path)).click();
+    	driver.findElement(By.xpath(sign_in_path)).click();
     }
     
     public void clickSignOutBtn()
     {
     	String sign_out_path = "/html/body/div/header/div[1]/div/a";
     	/* Click sign in button */
-    	WebPage.driver.findElement(By.xpath(sign_out_path)).click();
+    	driver.findElement(By.xpath(sign_out_path)).click();
     }
     
     public void clickRegisterBtn()
@@ -50,27 +47,27 @@ public class HomePage extends WebPage {
     public void clickHomeMenu()
     {
     	String home_menu_path = "//*[@id=\"bs-example-navbar-collapse-1\"]/ul[1]/li[1]/a";
-    	WebPage.driver.findElement(By.xpath(home_menu_path)).click();
+    	driver.findElement(By.xpath(home_menu_path)).click();
     }
     
     public void clickAllBooksMenu()
     {
     	String all_books_id = "idMybooks";
     	WebElement element = driver.findElement(By.id(all_books_id));
-    	wait.until(ExpectedConditions.elementToBeClickable(element));
+    	WebPage.wait.until(ExpectedConditions.elementToBeClickable(element));
 
     	element.click();
 
-        boolean flag = wait.until(ExpectedConditions.urlContains("elibrary/books"));
+        boolean flag = WebPage.wait.until(ExpectedConditions.urlContains("elibrary/books"));
         Assert.assertTrue(flag);
     }
    
-    public void loginAs(String name, String password)  
+    public BooksPage loginAs(String name, String password)
     {
         WebElement element;
 
         element = driver.findElement(By.id("modal_signin"));
-        boolean res = wait.until(ExpectedConditions.attributeToBe(element, "aria-hidden", "false"));
+        boolean res = WebPage.wait.until(ExpectedConditions.attributeToBe(element, "aria-hidden", "false"));
         Assert.assertTrue(res, "Probably expected to press \"Login\" button");
 
         element = driver.findElement(By.id("signin_email"));
@@ -84,24 +81,28 @@ public class HomePage extends WebPage {
         element.sendKeys(password);
 
         element.submit();
+
+         return new BooksPage();
     }
-    public boolean isLoginTrue(){
-        boolean flag = true;
-        return true;
-    }
+
     public boolean isLoginFalse(){
 
         WebElement element = driver.findElement(By.id("iddanger"));
-        boolean flag = wait.until(ExpectedConditions.textToBePresentInElement(element, " "));
+        boolean flag = WebPage.wait.until(ExpectedConditions.textToBePresentInElement(element, " "));
+
         return !flag;
     }
 
+    /**
+     * Expects
+     * */
     public void registerAs(String firstName, String lastName, String email, 
     		String password, String passConfirm) {
+
         WebElement element;
 
         element = driver.findElement(By.id("modal_register"));
-        boolean res = wait.until(ExpectedConditions.attributeToBe(element, "aria-hidden", "false"));
+        boolean res = WebPage.wait.until(ExpectedConditions.attributeToBe(element, "aria-hidden", "false"));
         Assert.assertTrue(res, "Probably expected to press \"Registation\" button");
 
         driver.findElement(By.id("reg_first_name"))   .sendKeys(firstName);
@@ -112,11 +113,13 @@ public class HomePage extends WebPage {
 
         driver.findElement(By.id("btnRegister")).click();
 
+    }
+    public String getRegistrationResult(){
+
+        WebElement element;
         element = driver.findElement(By.xpath("//*[@id=\"reg_request_form\"]/div[1]"));
-        wait.until(ExpectedConditions.textToBePresentInElement(element, " ")); //ждем появления текста в теге <span>
+        WebPage.wait.until(ExpectedConditions.textToBePresentInElement(element, " ")); //ждем появления текста в теге <span>
 
-        String answer = element.getText();
-        Assert.assertTrue(answer.contains("Thank you!"), "Registration failed with msg : " + answer);
+        return element.getText();
     }
-
-    }
+}

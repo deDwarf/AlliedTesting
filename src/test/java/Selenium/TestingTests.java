@@ -9,9 +9,15 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,18 +27,22 @@ import java.util.regex.Pattern;
  * Created by User on 23.02.2017.
  */
 
-
 public class TestingTests {
 
-    private boolean cleverEquals(String template, String suspect){
-        Pattern pattern = Pattern.compile("^(\\s)*(\\t)*" + template + '$');
-        Matcher matcher = pattern.matcher(suspect);
-        return matcher.matches();
+    @Test(description = "LALALALALALLALALALALALALLALAL")
+    public void test() {
+
+    KEK kkeke = new KEK();
+    lalala(kkeke);
     }
 
-    @Test
-    public void test() throws InterruptedException {
-        String str = System.getProperty("user.dir");
-        System.out.println(str);
+    class KEK {
+        public KEK(){
+            System.out.println("kek CONSTR");
+        }
+    }
+    void lalala(KEK ke){
+        System.out.println("KEK FUNC");
     }
 }
+

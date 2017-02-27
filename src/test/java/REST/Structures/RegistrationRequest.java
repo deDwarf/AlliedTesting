@@ -1,16 +1,18 @@
-package REST;
+package REST.Structures;
+
+import REST.REST;
 
 import java.util.Date;
 
 public class RegistrationRequest {
-	
-	int    id;
-	String firstName;
-	String lastName;
-	String email;
-	String password;
-	Date   createdAt;
-	String status;
+
+	private int    id;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String password;
+	private Date   createdAt;
+	private String status;
 	
 	
 	public int getId() {

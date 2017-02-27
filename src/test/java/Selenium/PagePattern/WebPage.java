@@ -20,7 +20,7 @@ import org.testng.annotations.BeforeTest;
 
 public class WebPage {
 
-	public static WebDriver driver;
+	public static WebDriver driver = null;
 	public static WebDriverWait wait;
 	public static final String home = "http://81.180.75.144:8080/elibrary";
 
@@ -32,11 +32,12 @@ public class WebPage {
 		//ChromeOptions options = new ChromeOptions();
 		//options.setExperimentalOption("excludeSwitches", Arrays.asList("ignore-certificate-errors"));
 		//driver = new ChromeDriver(options);
-
-		driver = new FirefoxDriver();
-		driver.manage().window().maximize();
-		wait = new WebDriverWait(driver, 5);
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		if (driver == null){
+			driver = new FirefoxDriver();
+			WebPage.driver.manage().window().maximize();
+			wait = new WebDriverWait(driver, 5);
+			WebPage.driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		}
 }
 
 /**
@@ -57,12 +58,12 @@ public class WebPage {
 
 	}
 	public void findAndClick(String xpath) {
-		driver.findElement(By.xpath(xpath)).click();
+		WebPage.driver.findElement(By.xpath(xpath)).click();
 	}
 
 	public void Quit() {
 		if (driver != null){
-			driver.quit();
+			WebPage.driver.quit();
 		}
 	}
 }

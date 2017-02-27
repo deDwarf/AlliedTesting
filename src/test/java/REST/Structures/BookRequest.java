@@ -1,16 +1,18 @@
-package REST;
+package REST.Structures;
 
 import java.util.Date;
+
+import REST.REST;
 import REST.Structures.*;
 
 public class BookRequest {
 
-	int    id;
-	User   user;
-	Book   book;
-	String note;
-	Date   createdDate;
-	String status;
+	private int    id;
+	private User   user;
+	private Book   book;
+	private String note;
+	private Date   createdDate;
+	private String status;
 	
 	
 	public int getId() {

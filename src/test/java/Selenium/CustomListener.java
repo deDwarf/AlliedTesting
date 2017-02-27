@@ -9,6 +9,7 @@ import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import sun.security.krb5.internal.crypto.Des;
 import test.BaseTest;
 import test.bug92.TestBase;
 
@@ -34,25 +35,26 @@ public class CustomListener implements ITestListener {
     private final String projectPath = System.getProperty("user.dir") + "\\";
     private final String templatePath = projectPath + "Reports\\READONLY_Template.html";
     private final String resultsPath = projectPath + "Reports\\TestResults\\";
-    private  String currentDir;
-
     private final Path path = Paths.get(templatePath);
+
+    private  String currentDir;
 
     private List<String> templateContent = new LinkedList<>();
 
-    private int testCount = 1;
+    private int testCount = 0;
     private int allTestsIndex, failedTestsIndex;
 
-
+    //Ignoring /t and spaces
     private boolean cleverEquals(String template, String suspect){
         Pattern pattern = Pattern.compile("^(\\s)*(\\t)*" + template + '$');
         Matcher matcher = pattern.matcher(suspect);
         return matcher.matches();
     }
+    private List<String> FillSummaryTable(String status, ITestResult iTestResult){
 
-    private List<String> FillSummaryTable(String status, String comments, ITestResult iTestResult){
         List<String> insert = new LinkedList<>();
 
+        String description = iTestResult.getMethod().getDescription();
         long durationSec = (iTestResult.getEndMillis() - iTestResult.getStartMillis());
 
         String green = "#9FF781";
@@ -60,19 +62,22 @@ public class CustomListener implements ITestListener {
         String color = (iTestResult.getStatus() == iTestResult.SUCCESS)? green : red;
 
         insert.add("<tr style=\"background-color:" + color + "\">");
-        insert.add("<td>" + testCount++ + "</td>");
+        insert.add("<td>" + testCount + "</td>");
         insert.add("<td>" + iTestResult.getMethod().getMethodName() + "</td>");
         insert.add("<td>" + status + "</td>");
         insert.add("<td>" + durationSec + " ms" + "</td>");
-        insert.add("<td>" + comments + "</td>");
+        insert.add("<td>" + description + "</td>");
         insert.add("</tr>");
 
         return insert;
     }
-    private List<String> FillFailsTable(String comments, ITestResult iTestResult, String screenPath){
+    private List<String> FillFailsTable(ITestResult iTestResult, String screenPath){
+
+        String description = iTestResult.getMethod().getDescription();
+        Throwable throwable = iTestResult.getThrowable();
         String methodName = iTestResult.getMethod().getMethodName();
         String insertScreen = "<a href=\"" + screenPath + "\">\n" +
-                "  <img src=\"" + screenPath + "\" alt=\"" + methodName +
+                "  <img src=\"" + screenPath + "\" alt=\"" + methodName + testCount +
                 "\" style=\"width:960;height:400pt;border:0;\">\n</a>";
 
         List<String> insert = new LinkedList<>();
@@ -80,11 +85,11 @@ public class CustomListener implements ITestListener {
         long durationSec = (iTestResult.getEndMillis() - iTestResult.getStartMillis());
 
         insert.add("<tr>");
-        insert.add("<td>" + testCount++ + "</td>");
+        insert.add("<td>" + testCount + "</td>");
         insert.add("<td>" + methodName + "</td>");
         insert.add("<td>" + "Fail" + "</td>");
         insert.add("<td>" + durationSec + " ms" + "</td>");
-        insert.add("<td>" + comments + "<br />" + insertScreen + "</td>");
+        insert.add("<td>" + throwable.getMessage() + "<br />" + insertScreen + "</td>");
         insert.add("</tr>");
 
         return insert;
@@ -95,7 +100,7 @@ public class CustomListener implements ITestListener {
 
         File src = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         try {
-            path = currentDir + "src\\" + iTestResult.getMethod().getMethodName() + ".png";
+            path = currentDir + "src\\" + iTestResult.getMethod().getMethodName() + testCount + ".png";
             FileUtils.copyFile(src, new File(path));
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,15 +109,11 @@ public class CustomListener implements ITestListener {
         return path;
     }
 
-    public void onTestStart(ITestResult iTestResult) {
-        System.out.println("test start");
-    }
+    public void onTestStart(ITestResult iTestResult) {testCount++;}
 
     public void onTestSuccess(ITestResult iTestResult) {
-        System.out.println("testsuccess");
 
-        String comments = "-";
-        List<String> insert = FillSummaryTable("Success", comments, iTestResult);
+        List<String> insert = FillSummaryTable("Success", iTestResult);
 
         for(String line : insert){
             templateContent.add(++allTestsIndex, line);
@@ -121,13 +122,11 @@ public class CustomListener implements ITestListener {
     }
 
     public void onTestFailure(ITestResult iTestResult) {
-        System.out.println("testfailed");
 
         String screenPath = makeScreenshot(iTestResult);
 
-        String comments = "-";
-        List<String> insertF = FillFailsTable(comments, iTestResult, screenPath);
-        List<String> insertA = FillSummaryTable("Fail", comments, iTestResult);
+        List<String> insertF = FillFailsTable(iTestResult, screenPath);
+        List<String> insertA = FillSummaryTable("Fail", iTestResult);
 
         for(String line : insertA){
             templateContent.add(++allTestsIndex, line);
@@ -139,10 +138,8 @@ public class CustomListener implements ITestListener {
     }
 
     public void onTestSkipped(ITestResult iTestResult) {
-        System.out.println("testskipped");
 
-        String comments = "-";
-        List<String> insert = FillSummaryTable("Skip", comments, iTestResult);
+        List<String> insert = FillSummaryTable("Skip", iTestResult);
 
         for(String line : insert){
             templateContent.add(++allTestsIndex, line);
@@ -150,16 +147,14 @@ public class CustomListener implements ITestListener {
         }
     }
 
-    public void onTestFailedButWithinSuccessPercentage(ITestResult iTestResult) {
-    }
+    public void onTestFailedButWithinSuccessPercentage(ITestResult iTestResult) {}
 
     public void onStart(ITestContext iTestContext) {
-        System.out.println("onStart");
 
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd', 'HH.mm");
 
         currentDir = resultsPath + date.format(new Date()) + "\\";
-        boolean mkdirRes = (new File(currentDir + "\\src")).mkdirs();
+        boolean mkdirRes = (new File(currentDir + "src")).mkdirs();
 
         Assert.assertTrue(mkdirRes, "mkdir failed");
 
@@ -179,12 +174,12 @@ public class CustomListener implements ITestListener {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Template is probably missing");
+            System.out.println("Probably template is missing");
         }
     }
 
     public void onFinish(ITestContext iTestContext) {
-        System.out.println("onFinish");
+
         FileWriter file = null;
         try {
             file = new FileWriter(currentDir + "report.html", true);
@@ -195,8 +190,11 @@ public class CustomListener implements ITestListener {
             file.flush();
             Desktop desktop = null;
             if (Desktop.isDesktopSupported()){
+                desktop = Desktop.getDesktop();
                 desktop.open(new File(currentDir + "report.html"));
             }
+
+            System.out.println("REPORT SAVED AT " + currentDir);
 
         } catch (IOException e) {
             e.printStackTrace();
