@@ -1,10 +1,9 @@
 package Selenium;
 
-import Selenium.PagePattern.BooksPage;
-import Selenium.PagePattern.HomePage;
-import Selenium.PagePattern.WebPage;
+import Selenium.Pages.BooksPage;
+import Selenium.Pages.HomePage;
+import Selenium.Pages.WebPage;
 import org.testng.Assert;
-import org.testng.AssertTest;
 import org.testng.ITestContext;
 import org.testng.annotations.*;
 
@@ -23,14 +22,14 @@ public class FirstStepsTests {
     }
 
     @DataProvider
-    public Object[][] positiveLoginParams(){
+    public static Object[][] positiveLoginParams(){
         return new Object[][] {
                 {"worker@alliedtesting.com", "123"},
                 {"user@alliedtesting.com", "123"},
         };
     }
     @DataProvider
-    public Object[][] negativeLoginParams(){
+    public static Object[][] negativeLoginParams(){
         return new Object[][] {
                 {"worker@alliedtesting.com", "231"},
                 {"user@alliedtesting.com", "321"}
@@ -39,19 +38,19 @@ public class FirstStepsTests {
 
     @Test(dataProvider = "positiveLoginParams", description = "Logins to worker@ and user@ profiles. " +
             "Success expected, correct params")
-    public void positiveLogin(String name, String password){
+    public void positiveLogin(String name, String password) throws InterruptedException {
 
         page.openPage();
         page.clickSignInBtn();
         BooksPage booksPage = page.loginAs(name, password);
 
-        Assert.assertTrue(page.isLoginFalse(), "Login failed");
+        Assert.assertTrue(page.isLogged(), "Login failed");
+        page = booksPage.clickSignOutBtn();
 
-        booksPage.clickSignOutBtn();
-        Assert.assertEquals(WebPage.driver.getCurrentUrl(), WebPage.home, "Signout failed");
+        Assert.assertFalse(page.isLogged(), "Signout failed");
     }
     @Test(dataProvider = "negativeLoginParams",  description = "Logins to worker@ and user@ profiles. " +
-            "Fail expected, wrong params")
+            "Expecting error msg, wrong params")
     public void negativeLogin(String name, String password){
 
         page.openPage();
@@ -61,6 +60,7 @@ public class FirstStepsTests {
         if (page.isLoginFalse()) Assert.fail("Logged in with wrong params. Although it shouldn`t!");
     }
 
+    //DataProvider
     @Test(description = "Registration of an account. " +
             "Success expected, correct params")
     public void Registration() throws InterruptedException {
@@ -82,6 +82,12 @@ public class FirstStepsTests {
 
         page.openPage();
         page.clickAllBooksMenu();
+    }
+
+    @Test(description = "Fail demonstration")
+    public void fail(){
+        page.openPage();
+        Assert.fail("Fail demo");
     }
 
     @AfterClass

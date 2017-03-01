@@ -82,6 +82,7 @@ public class CustomListener implements ITestListener {
 
         List<String> insert = new LinkedList<>();
 
+        
         long durationSec = (iTestResult.getEndMillis() - iTestResult.getStartMillis());
 
         insert.add("<tr>");

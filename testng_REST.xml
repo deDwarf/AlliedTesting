@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Default Suite">
+<!--
+  <listeners>
+    <listener class-name="org.uncommons.reportng.HTMLReporter" />
+    <listener class-name="org.uncommons.reportng.JUnitXMLReporter" />
+  </listeners>
+ -->
+  <test name="ElibraryTestSuite">
+	<groups>
+		<run>
+			<include name="common_workspace"/>
+		</run>
+	</groups>
+	
+    <classes>
+      <class name="REST.RestTests">
+	  </class>
+    </classes>
+	
+  </test>
+</suite>
+

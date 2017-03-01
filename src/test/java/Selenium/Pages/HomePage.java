@@ -1,13 +1,10 @@
-package Selenium.PagePattern;
+package Selenium.Pages;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+
 
 
 /*
@@ -23,20 +20,6 @@ public class HomePage extends WebPage {
 	{
 		driver.get(home);
 	}
-
-    public void clickSignInBtn()
-    {
-    	String sign_in_path = "/html/body/div/header/div[1]/div/button[1]";
-    	/* Click sign in button */
-    	driver.findElement(By.xpath(sign_in_path)).click();
-    }
-    
-    public void clickSignOutBtn()
-    {
-    	String sign_out_path = "/html/body/div/header/div[1]/div/a";
-    	/* Click sign in button */
-    	driver.findElement(By.xpath(sign_out_path)).click();
-    }
     
     public void clickRegisterBtn()
     {
@@ -82,15 +65,7 @@ public class HomePage extends WebPage {
 
         element.submit();
 
-         return new BooksPage();
-    }
-
-    public boolean isLoginFalse(){
-
-        WebElement element = driver.findElement(By.id("iddanger"));
-        boolean flag = WebPage.wait.until(ExpectedConditions.textToBePresentInElement(element, " "));
-
-        return !flag;
+        return new BooksPage();
     }
 
     /**
