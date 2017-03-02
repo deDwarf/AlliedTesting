@@ -1,9 +1,6 @@
 package REST;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,15 +9,12 @@ import java.util.List;
 
 import REST.Structures.*;
 import com.google.gson.*;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.runner.Request;
-import test.objectfactory.Simple;
 
 /* TODO:
  * 		- Test methods  
@@ -122,31 +116,30 @@ public class REST {
 	}
 
 	/* POST - http://{host}/elibraryws/books */
-	public Book createBook(Book book) throws Exception {
+	public HttpResponse createBook(Book book) throws Exception {
 		
-		String url            = "http://" + host + "/elibraryws/books";
+		String url            = "http://" + host + "/elibraryws/books/";
 		HttpResponse response = createRequest(book, url);
-		
-		return gson.fromJson(getResponseData(response), Book.class);
-	} 
+
+		return response;
+	}
 	
 	/* PUT - http://{host}/elibraryws/books/{bookId} */
-	public void updateBook(int id, Book book) throws Exception {
+	public HttpResponse updateBook(int id, Book book) throws Exception {
 		
 		String url            = "http://" + host + "/elibraryws/books/" + id;
 		HttpResponse response = updateRequest(book, url);
 		
-		System.out.println(getResponseData(response));		
+		return response;
 	}
 	
 	/* DELETE - http://{host}/elibraryws/books/{bookId} */
-	public void removeBook(int id) throws Exception {
+	public HttpResponse removeBook(int id) throws Exception {
 		
 		String url            = "http://" + host + "/elibraryws/books/" + id;
 		HttpResponse response = removeRequest(url);
-		
-		System.out.println("Removing Book with id : " + id);
-		System.out.println(getResponseData(response));
+
+		return response;
 	}
 	
 	/* POST - http://{host}/elibraryws/books/get-filtered-data-count */

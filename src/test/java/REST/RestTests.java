@@ -7,8 +7,6 @@ import Selenium.FirstStepsTests;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.testng.Assert;
-import org.testng.TestNG;
-import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -17,10 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import Selenium.FirstStepsTests.*;
 
 /**
  * :: TODO ::
@@ -84,39 +78,6 @@ public class RestTests extends REST{
                 "\npassword = " + password + '\n');
     }
 
-    @Test(groups = "guest_workspace")
-    public void test_getBook(){
-        int id = 10;
-        try {
-            Book book = this.getBook(id);
-
-            Assert.assertTrue(book != null, "getBook returned null");
-            //Ожидаем возврат нужной книги
-            Assert.assertTrue(book.getId() == id,
-                    "Requested book with id = " + id +" ,received with " + book.getId());
-
-            prettyPrint(book);
-            //Кинуть в логи книгу для листенера
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail("Getting book failed: id = " + id);
-        }
-    }
-
-    //@Test(groups = "extended_workspace")
-    public void test_removeBook(){
-        int id = 1;
-        try {
-            this.removeBook(id);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail("Deletion failed");
-        }
-    }
-
-
     @DataProvider
     public Object[][] bookGenerator(){
         List<Author> authors = new ArrayList<>();
@@ -124,7 +85,7 @@ public class RestTests extends REST{
         return new Object[][]{
                 {new Book("Title",
                         "EN",
-                        new Category("Category title"),
+                        new Category("Category"),
                         new Date(),
                         333,
                         authors)}
@@ -134,10 +95,65 @@ public class RestTests extends REST{
     @Test(dataProvider = "bookGenerator")
     public void test_addBook(Book book){
         try {
-            this.createBook(book);
+            HttpResponse response = this.createBook(book);
+            String answer = response.getStatusLine().toString();
+
+            Assert.assertTrue(answer.contains("201 Created"),
+                    "[test_addBook] Unexpected answer: " + answer);
+
         } catch (Exception e) {
             e.printStackTrace();
-            Assert.fail("Cant create book");
+            Assert.fail("[test_addBook] Cant create book");
+        }
+    }
+
+    @Test(dataProvider = "bookGenerator")
+    public void test_updateBook(/*int id, */Book book){
+        try {
+            int id = 10;
+            HttpResponse response = this.updateBook(id, book);
+            String answer = response.getStatusLine().toString();
+
+            Assert.assertTrue(answer.contains("204 No Content"),
+                    "[test_updateBook] Unexpected answer: " + answer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("[test_updateBook] Update book chashed somehow");
+        }
+    }
+
+    @Test(groups = "guest_workspace")
+    public void test_getBook(){
+        int id = 10;
+        try {
+            Book book = this.getBook(id);
+
+            Assert.assertTrue(book != null, "[test_getBook] getBook returned null");
+            //Ожидаем возврат нужной книги
+            Assert.assertTrue(book.getId() == id,
+                    "[test_getBook] Requested book with id = " + id +" ,received with " + book.getId());
+
+            prettyPrint(book);
+            //Кинуть в логи книгу для листенера
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("[test_getBook] Getting book failed: id = " + id);
+        }
+    }
+
+    @Test(groups = "extended_workspace")
+    public void test_removeBook(){
+        int id = 1;
+        try {
+            HttpResponse response = this.removeBook(id);
+            String answer = response.getStatusLine().toString();
+
+            Assert.assertTrue(answer.contains("204 No Content"), "[test_removeBook] Unexpected answer: " + answer);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("[test_removeBook] Deletion failed");
         }
     }
 }

@@ -6,6 +6,10 @@
     <listener class-name="org.uncommons.reportng.JUnitXMLReporter" />
   </listeners>
  -->
+
+	<!-- This suite is for testing access levels for different users-->
+
+
 	<!-- Testing access level for users-->
 
    	<test name="LoginAsUser">

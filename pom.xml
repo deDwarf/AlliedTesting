@@ -52,19 +52,22 @@
                 <version>2.5</version>
                 <configuration>
                     <properties>
-                        <property>
+						<property>
                             <name>usedefaultlisteners</name>
                             <value>false</value>
                         </property>
-                        <property>
+                        
+						<property>
                             <name>listener</name>
                             <value>org.uncommons.reportng.HTMLReporter, org.uncommons.reportng.JUnitXMLReporter</value>
                         </property>
+					</properties>
 
 						<suiteXmlFiles>
-						    <suiteXmlFile>testng_REST</suiteXmlFile>
+						    <suiteXmlFile>testng_Selenium.xml</suiteXmlFile>
+						    <suiteXmlFile>testng_REST_Default.xml</suiteXmlFile>
                         </suiteXmlFiles>
-                    </properties>
+                    
                     <workingDirectory>target/</workingDirectory>
                 </configuration>
             </plugin>
