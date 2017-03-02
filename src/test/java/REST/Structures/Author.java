@@ -8,8 +8,16 @@ public class Author {
 	String fullName;
 	Date   dateOfBirth;
 	String description;
-	
-	
+
+	public Author(String fullName, Date dateOfBirth) {
+
+		this.fullName = fullName;
+		this.dateOfBirth = dateOfBirth;
+
+		this.description = "Default author description";
+	}
+
+
 	public int getId() {
 		return id;
 	}

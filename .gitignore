@@ -3,6 +3,8 @@
 
 Reports/TestResults/*
 TestingTests.java
+velocity.log
+*.docx
 
 ## File-based project format:
 *.iws

@@ -60,7 +60,10 @@
                             <name>listener</name>
                             <value>org.uncommons.reportng.HTMLReporter, org.uncommons.reportng.JUnitXMLReporter</value>
                         </property>
-						<suiteXmlFile>testSuite.xml</suiteXmlFile>
+
+						<suiteXmlFiles>
+						    <suiteXmlFile>testng_REST</suiteXmlFile>
+                        </suiteXmlFiles>
                     </properties>
                     <workingDirectory>target/</workingDirectory>
                 </configuration>

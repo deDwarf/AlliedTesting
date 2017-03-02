@@ -4,20 +4,37 @@ import java.util.Date;
 import java.util.List;
 
 public class Book {
-	
-	int           id;
-	String        title;
-	String        language;
-	Category      category;
-	Date          yearPublished;
-	String        summary;
-	boolean       active;
-	int           numberOfItems;
-	boolean       availability;
-	String        cover;
-	List<Comment> comments;
-	List<Author>  authors;
-	
+
+	private int           id;
+	private String        title;
+	private String        language;
+	private Category      category;
+	private Date          yearPublished;
+	private String        summary;
+	private boolean       active;
+	private int           numberOfItems;
+	private boolean       availability;
+	private String        cover;
+	private List<Comment> comments;
+	private List<Author>  authors;
+
+	public Book(){}
+	public Book(String title, String language, Category category,
+				Date yearPublished, int numberOfItems, List<Author> authors) {
+
+		this.title = title;
+		this.language = language;
+		this.category = category;
+		this.yearPublished = yearPublished;
+		this.numberOfItems = numberOfItems;
+		this.authors = authors;
+
+		this.cover = null;
+		this.summary = "Default Summary";
+		this.availability = false;
+		this.active = true;
+		this.comments = null;
+	}
 
 	public int getId() {
 		return id;

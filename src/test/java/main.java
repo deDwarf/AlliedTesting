@@ -32,7 +32,6 @@ public class main {
 	    REST API = new REST();
 	    String filter = "{\"categoryId\":1,\"authorId\":1}";
 
-
 	    API.prettyPrint(API.getBook(1));
 	}
 

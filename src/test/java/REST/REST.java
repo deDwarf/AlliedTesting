@@ -1,20 +1,26 @@
 package REST;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import REST.Structures.*;
 import com.google.gson.*;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.junit.runner.Request;
+import test.objectfactory.Simple;
 
 /* TODO:
  * 		- Test methods  
@@ -22,51 +28,58 @@ import org.apache.http.util.EntityUtils;
 
 public class REST {
 	
-	private static HttpClient httpclient = null;
-	private static Gson   gson           = null;
-	private static String host           = "81.180.75.144:8080";
-	
+	protected static HttpClient httpclient = null;
+	protected static Gson   gson           = null;
+	protected static String host           = "81.180.75.144:8080";
+	protected final String home_uri = "http://" + host + "/elibrary";
+	protected final String login_uri = home_uri + "/auth/login";
+
 	public REST() {
 
 		if (httpclient == null) {
+
 			httpclient     = HttpClientBuilder.create().build();
-			
+
 			GsonBuilder gb = new GsonBuilder();
-			gb.setPrettyPrinting();
 			gb.setDateFormat("yyyy-MM-dd");
 			gb.registerTypeAdapter(Date.class, new DateDeserializer());
+			gb.registerTypeAdapter(java.sql.Date.class, new DateDeserializer());
 			gb.setPrettyPrinting();
 			gson       = gb.create();
 		}
 	}
 	
-	private String getResponseData(HttpResponse response) throws Exception
+	protected String getResponseData(HttpResponse response) throws Exception
 	{
 		return EntityUtils.toString(response.getEntity());
 	}
-	
 	
 	public void prettyPrint(Object  obj)
 	{
 		System.out.println(gson.toJson(obj));
 	}
 
-	private HttpResponse getRequest(String url) throws Exception
+	protected HttpResponse getRequest(String url) throws Exception
 	{
-		return httpclient.execute(new HttpGet(url));
+        HttpUriRequest request = RequestBuilder.get()
+                .setUri(url)
+                .addHeader("Accept", "application/json")
+                .build();
+		return httpclient.execute(request);
 	}
 
-	private HttpResponse createRequest(Object obj, String url) throws Exception
+	protected HttpResponse createRequest(Object obj, String url) throws Exception
 	{
 		HttpPost request     = new HttpPost(url);
 		request.setHeader("Content-type", "application/json");
 		request.setHeader("Accept", "application/json");
 		StringEntity payload = new StringEntity(gson.toJson(obj));
 		request.setEntity(payload);
+
 		return httpclient.execute(request);
 	}
 
-	private HttpResponse updateRequest(Object obj, String url) throws Exception
+	protected HttpResponse updateRequest(Object obj, String url) throws Exception
 	{
 		HttpPut  request     = new HttpPut(url);
 		
@@ -77,9 +90,22 @@ public class REST {
 		return httpclient.execute(request);
 	}
 
-	private HttpResponse removeRequest(String url) throws Exception
+	protected HttpResponse removeRequest(String url) throws Exception
 	{
 		return httpclient.execute(new HttpDelete(url));
+	}
+
+	/** Login **/
+	public HttpResponse loginRequest(String username, String password) throws IOException {
+
+		HttpUriRequest loginReq = RequestBuilder.post()
+				.setUri(login_uri)
+				.addHeader("User-Agent", "User_Agent")
+				.addParameter("j_username", username)
+				.addParameter("j_password", password)
+				.build();
+
+		return httpclient.execute(loginReq);
 	}
 
 
@@ -95,7 +121,6 @@ public class REST {
 		return gson.fromJson(getResponseData(response), Book.class);
 	}
 
-	
 	/* POST - http://{host}/elibraryws/books */
 	public Book createBook(Book book) throws Exception {
 		
@@ -394,7 +419,7 @@ public class REST {
 		return Integer.valueOf(getResponseData(response));
 	}
 	
-	/* POST - http://{host}/elibraryws/book-requests/get-data/{offset}/{limit}/{sort_by}/{sort_dir} */
+	/* POST - http://{host}/elibraryws/book-requests/get-data/{offset}/{limit}/{sort_by}/{	sort_dir} */
 	@SuppressWarnings("unchecked")
 	public List<BookRequest> getBookRequests(String filter, int offset, int limit,
                                              String sort_by, String sort_dir) throws Exception {
@@ -608,9 +633,18 @@ public class REST {
 
 class DateDeserializer implements JsonDeserializer<Date> {
 
-	public Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
-		long l = element.getAsLong();
-			return new Date(l);
+	public Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+            throws JsonParseException {
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat();
+        dateFormat.applyPattern("yyyy-MM-dd");
+
+        try {
+            return dateFormat.parse(element.getAsString());
+
+        } catch (ParseException e) {
+            //e.printStackTrace();
+        }
+        return null;
 	}
 }
