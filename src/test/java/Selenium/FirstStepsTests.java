@@ -14,20 +14,21 @@ import org.testng.annotations.*;
 @Test
 public class FirstStepsTests {
 
-    private HomePage page = new HomePage();
+    private HomePage page;
 
     @BeforeClass
     public void onStart(ITestContext context){
+        page = new HomePage();
         context.setAttribute("WebDriver", WebPage.driver);
     }
 
-    @DataProvider
-    public static Object[][] positiveLoginParams(){
-        return new Object[][] {
-                {"worker@alliedtesting.com", "123"},
-                {"user@alliedtesting.com", "123"},
-        };
-    }
+        @DataProvider
+        public static Object[][] positiveLoginParams(){
+            return new Object[][] {
+                    {"worker@alliedtesting.com", "123"},
+                    {"user@alliedtesting.com", "123"},
+            };
+        }
     @DataProvider
     public static Object[][] negativeLoginParams(){
         return new Object[][] {
@@ -44,10 +45,10 @@ public class FirstStepsTests {
         page.clickSignInBtn();
         BooksPage booksPage = page.loginAs(name, password);
 
-        Assert.assertTrue(page.isLogged(), "Login failed");
+        Assert.assertTrue(page.isLogined(), "Login failed");
         page = booksPage.clickSignOutBtn();
 
-        Assert.assertFalse(page.isLogged(), "Signout failed");
+        Assert.assertFalse(page.isLogined(), "Signout failed");
     }
     @Test(dataProvider = "negativeLoginParams",  description = "Logins to worker@ and user@ profiles. " +
             "Expecting error msg, wrong params")

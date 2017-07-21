@@ -110,7 +110,7 @@ public class RestTests extends REST{
     @Test(dataProvider = "bookGenerator")
     public void test_updateBook(/*int id, */Book book){
         try {
-            int id = 10;
+            int id = 13;
             HttpResponse response = this.updateBook(id, book);
             String answer = response.getStatusLine().toString();
 
@@ -124,7 +124,7 @@ public class RestTests extends REST{
 
     @Test(groups = "guest_workspace")
     public void test_getBook(){
-        int id = 10;
+        int id = 13;
         try {
             Book book = this.getBook(id);
 
@@ -142,7 +142,7 @@ public class RestTests extends REST{
         }
     }
 
-    @Test(groups = "extended_workspace")
+    //@Test(groups = "extended_workspace")
     public void test_removeBook(){
         int id = 1;
         try {

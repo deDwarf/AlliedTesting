@@ -3,15 +3,10 @@ package Selenium;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import sun.security.krb5.internal.crypto.Des;
-import test.BaseTest;
-import test.bug92.TestBase;
 
 import java.awt.*;
 import java.io.File;
@@ -21,7 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +46,7 @@ public class CustomListener implements ITestListener {
         Matcher matcher = pattern.matcher(suspect);
         return matcher.matches();
     }
+
     private List<String> FillSummaryTable(String status, ITestResult iTestResult){
 
         List<String> insert = new LinkedList<>();
@@ -71,14 +68,21 @@ public class CustomListener implements ITestListener {
 
         return insert;
     }
+
     private List<String> FillFailsTable(ITestResult iTestResult, String screenPath){
 
         String description = iTestResult.getMethod().getDescription();
         Throwable throwable = iTestResult.getThrowable();
         String methodName = iTestResult.getMethod().getMethodName();
-        String insertScreen = "<a href=\"" + screenPath + "\">\n" +
-                "  <img src=\"" + screenPath + "\" alt=\"" + methodName + testCount +
-                "\" style=\"width:960;height:400pt;border:0;\">\n</a>";
+        String insertScreen;
+        if (screenPath != null){
+             insertScreen = "<a href=\"" + screenPath + "\">\n" +
+                    "  <img src=\"" + screenPath + "\" alt=\"" + methodName + testCount +
+                    "\" style=\"width:960;height:400pt;border:0;\">\n</a>";
+        }
+        else {
+            insertScreen = "Error making screeshot";
+        }
 
         List<String> insert = new LinkedList<>();
 
@@ -95,15 +99,16 @@ public class CustomListener implements ITestListener {
 
         return insert;
     }
+
     private String makeScreenshot(ITestResult iTestResult){
         String path = null;
         Object driver = iTestResult.getTestContext().getAttribute("WebDriver");
 
-        File src = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         try {
+            File src = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             path = currentDir + "src\\" + iTestResult.getMethod().getMethodName() + testCount + ".png";
             FileUtils.copyFile(src, new File(path));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

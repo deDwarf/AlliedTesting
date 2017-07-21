@@ -1,29 +1,25 @@
 package Selenium.Pages;
 
-import java.util.concurrent.TimeUnit;
-
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import javax.lang.model.element.Element;
+import java.util.concurrent.TimeUnit;
 
 public class WebPage {
 
 	public static WebDriver driver = null;
 	public static WebDriverWait wait;
 	public static final String home = "http://81.180.75.144:8080/elibrary/home";
-
+	static {
+		//System.setProperty("webdriver.chrome.driver", "E:/Projects/Software/chromedriver.exe");
+		System.setProperty("webdriver.gecko.driver", "E:/Projects/Software/geckodriver.exe");
+	}
 	public WebPage()
 	{
-		System.setProperty("webdriver.chrome.driver", "C:/Software/chromedriver.exe");
-		System.setProperty("webdriver.gecko.driver", "C:/Software/geckodriver.exe");
-
 		//ChromeOptions options = new ChromeOptions();
 		//options.setExperimentalOption("excludeSwitches", Arrays.asList("ignore-certificate-errors"));
 		//driver = new ChromeDriver(options);
@@ -45,12 +41,13 @@ public class WebPage {
 
 	return !flag;
 }
-	public boolean isLogged(){
+
+    public boolean isLogined(){
 	    try {
             WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("lnk_signout")));
             return element.isEnabled();
 	    }
-        catch (TimeoutException e){//throws TimeoutException if didnt wait for element
+        catch (Exception e){//throws TimeoutException if didnt wait for element
 	        return false;
         }
 	}
@@ -75,7 +72,7 @@ public class WebPage {
 
 	public void Quit() {
 		if (driver != null){
-			WebPage.driver.quit();
+			driver.quit();
 		}
 	}
 }

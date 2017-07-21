@@ -6,14 +6,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 
 
-
-/*
- * TODO:
- * 	- UI API
- */
 public class HomePage extends WebPage {
-	
-	
 	public HomePage(){}
 
 	public void openPage()
@@ -63,6 +56,14 @@ public class HomePage extends WebPage {
         element.clear();
         element.sendKeys(password);
 
+        //element = driver.findElement(By.id("user_login_form"));
+        //element.submit();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        element = driver.findElement(By.id("btn_login"));
         element.submit();
 
         return new BooksPage();
@@ -89,6 +90,7 @@ public class HomePage extends WebPage {
         driver.findElement(By.id("btnRegister")).click();
 
     }
+
     public String getRegistrationResult(){
 
         WebElement element;
